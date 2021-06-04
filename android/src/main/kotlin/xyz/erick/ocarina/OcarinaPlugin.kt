@@ -4,11 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.storage.StorageVolume
 import androidx.annotation.NonNull;
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util.getUserAgent
 
@@ -128,9 +128,9 @@ class AssetOcarinaPlayer(url: String, packageName: String?, volume: Double, loop
     val assetUrl = if (packageName != null) flutterAssets.getAssetFilePathByName(uri, packageName!!) else flutterAssets.getAssetFilePathByName(uri);
 
     // find file on assets
-    return ExtractorMediaSource(Uri.parse("file:///android_asset/" + assetUrl),
+    return ProgressiveMediaSource.Factory(
             DefaultDataSourceFactory(context,"ua"),
-            DefaultExtractorsFactory(), null, null);
+            DefaultExtractorsFactory()).createMediaSource(MediaItem.Builder().setUri(Uri.parse("file:///android_asset/" + assetUrl)).build());
   }
 }
 
@@ -139,9 +139,9 @@ class FileOcarinaPlayer(url: String, volume: Double, loop: Boolean, context: Con
   override fun extractMediaSourceFromUri(uri: String): MediaSource {
     val userAgent = getUserAgent(context, "ocarina");
 
-    return ExtractorMediaSource(Uri.parse(url),
+    return ProgressiveMediaSource.Factory(
             DefaultDataSourceFactory(context,"ua"),
-            DefaultExtractorsFactory(), null, null);
+      DefaultExtractorsFactory()).createMediaSource(MediaItem.Builder().setUri(Uri.parse(uri)).build());
   }
 }
 
